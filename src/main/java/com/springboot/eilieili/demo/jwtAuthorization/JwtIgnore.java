@@ -1,4 +1,4 @@
-package com.springboot.eilieili.demo.JwtAuthorization;
+package com.springboot.eilieili.demo.jwtAuthorization;
 
 import java.lang.annotation.*;
 

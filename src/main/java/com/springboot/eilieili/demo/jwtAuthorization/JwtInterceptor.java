@@ -1,9 +1,10 @@
-package com.springboot.eilieili.demo.JwtAuthorization;
+package com.springboot.eilieili.demo.jwtAuthorization;
 
 
 import com.springboot.eilieili.demo.common.exception.CustomException;
 import com.springboot.eilieili.demo.common.response.ResultCode;
 import com.springboot.eilieili.demo.util.JwtTokenUtil;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
@@ -44,6 +45,7 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
         log.info("## authHeader= {}", authHeader);
 
         if (StringUtils.isBlank(authHeader) || !authHeader.startsWith(JwtTokenUtil.TOKEN_PREFIX)) {
+            log.info(request.getRequestURL().toString());
             log.info("### 用户未登录，请先登录 ###");
             throw new CustomException(ResultCode.USER_NOT_LOGGED_IN);
         }

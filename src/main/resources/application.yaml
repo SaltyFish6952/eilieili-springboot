@@ -1,10 +1,14 @@
-###jwt配置
-#audience:
-#  # 代表这个JWT的接收对象,存入audience
-#  clientId: VTJ4V1RtVlZjRlpTYTFwTFZsWlZNQSUzRCUzRA
-#  # 密钥, 经过Base64加密, 可自行替换
-#  base64Secret: VlRKNFYxUnRWbFpqUmxwVFlURndURlpzV2xaTlFTVXpSQ1V6UkE=
-#  # JWT的签发主体，存入issuer
-#  name: restapiuser
-#  # 过期时间，时间戳
-#  expiresSecond: 172800
+spring:
+  datasource:
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.3.253:3306/elileili
+    type: com.alibaba.druid.pool.DruidDataSource
+
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+server:
+  port: 8088

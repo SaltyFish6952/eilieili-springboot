@@ -1,7 +1,7 @@
 package com.springboot.eilieili.demo.util;
 
 
-import com.springboot.eilieili.demo.JwtAuthorization.Audience;
+import com.springboot.eilieili.demo.jwtAuthorization.Audience;
 import com.springboot.eilieili.demo.common.exception.CustomException;
 import com.springboot.eilieili.demo.common.response.ResultCode;
 import io.jsonwebtoken.*;
@@ -47,11 +47,11 @@ public class JwtTokenUtil {
      * 构建jwt
      * @param userId
      * @param username
-     * @param role
+//     * @param role
      * @param audience
      * @return
      */
-    public static String createJWT(String userId, String username, String role, Audience audience) {
+    public static String createJWT(String userId, String username, Audience audience) {
         try {
             // 使用HS256加密算法
             SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
@@ -69,7 +69,7 @@ public class JwtTokenUtil {
             //添加构成JWT的参数
             JwtBuilder builder = Jwts.builder().setHeaderParam("typ", "JWT")
                     // 可以将基本不重要的对象信息放到claims
-                    .claim("role", role)
+//                    .claim("role", role)
                     .claim("userId", userId)
                     .setSubject(username)           // 代表这个JWT的主体，即它的所有人
                     .setIssuer(audience.getClientId())              // 代表这个JWT的签发主体；

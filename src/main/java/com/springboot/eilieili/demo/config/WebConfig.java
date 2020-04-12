@@ -1,9 +1,7 @@
 package com.springboot.eilieili.demo.config;
 
 
-import com.springboot.eilieili.demo.JwtAuthorization.JwtInterceptor;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
+import com.springboot.eilieili.demo.jwtAuthorization.JwtInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -18,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //拦截路径可自行配置多个 可用 ，分隔开
-        registry.addInterceptor(new JwtInterceptor()).addPathPatterns("/**");
+        registry.addInterceptor(new JwtInterceptor()).addPathPatterns("/api/*");
     }
 
     /**
