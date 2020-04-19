@@ -5,6 +5,10 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.3.253:3306/elileili
     type: com.alibaba.druid.pool.DruidDataSource
+  servlet:
+    multipart:
+      max-file-size: 5120MB
+      max-request-size: 5120MB
 
 mybatis:
   config-location: classpath:mybatis/mybatis-config.xml
@@ -12,3 +16,4 @@ mybatis:
 
 server:
   port: 8088
+

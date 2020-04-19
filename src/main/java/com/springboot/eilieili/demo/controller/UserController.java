@@ -8,10 +8,7 @@ import com.springboot.eilieili.demo.jwtAuthorization.JwtIgnore;
 import com.springboot.eilieili.demo.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by Intellij IDEA.
@@ -25,13 +22,17 @@ public class UserController {
     @Autowired(required = false)
     UserMapper userMapper;
 
+    @JwtIgnore
+    @GetMapping("/api/user")
+    public Result getUser(String userId) {
 
-    @GetMapping("/api/user/")
-    public Result getUser(String userAccount) {
+        if (userId == null) {
+            return new Result(ResultCode.PARAM_IS_BLANK);
+        }
 
-        User user = userMapper.getUserByAccount(userAccount);
+        User user = userMapper.getUserById(userId);
 
-        if (user == null){
+        if (user == null) {
             return new Result(ResultCode.RESULT_DATA_NONE);
         }
 
@@ -39,6 +40,85 @@ public class UserController {
         result.put("user", user);
 
         return Result.SUCCESS(result);
+
+    }
+
+
+    @GetMapping("/api/user/check/name")
+    public Result checkUserNameValid(String checkName, String userId) {
+
+        if (checkName == null) {
+            return new Result(ResultCode.PARAM_IS_BLANK);
+        }
+
+        Integer count = userMapper.checkUserName(checkName, userId);
+        JSONObject result = new JSONObject();
+
+        result.put("isValid", count == 0);
+
+        return Result.SUCCESS(result);
+    }
+
+    @GetMapping("/api/user/check/password")
+    public Result checkUserPasswordValid(String checkPassword, String userId) {
+
+        if (checkPassword == null) {
+            return new Result(ResultCode.PARAM_IS_BLANK);
+        }
+
+        Integer count = userMapper.checkUserPassword(userId, checkPassword);
+        JSONObject result = new JSONObject();
+
+        result.put("isValid", count == 1);
+
+        return Result.SUCCESS(result);
+    }
+
+
+    @PostMapping("/api/user/update/name")
+    public Result updateUserName(@RequestBody JSONObject data) {
+
+        String newName = data.getString("newName");
+        String userId = data.getString("userId");
+
+        if (newName == null || userId == null) {
+            return new Result(ResultCode.PARAM_NOT_COMPLETE);
+        }
+
+        try {
+            userMapper.updateUserName(userId, newName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return Result.FAIL();
+        }
+
+        return Result.SUCCESS();
+
+
+    }
+
+
+
+    @PostMapping("/api/user/update/password")
+    public Result updateUserPassword(@RequestBody JSONObject data) {
+
+        String newPassword = data.getString("newPassword");
+        String userId = data.getString("userId");
+
+        if (newPassword == null || userId == null) {
+            return new Result(ResultCode.PARAM_NOT_COMPLETE);
+        }
+
+        try {
+            userMapper.updateUserPassword(userId, newPassword);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return Result.FAIL();
+        }
+
+        return Result.SUCCESS();
 
     }
 

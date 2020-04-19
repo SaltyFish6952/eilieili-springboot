@@ -37,7 +37,7 @@ public class SectorController {
 
     @JwtIgnore
     @GetMapping("/api/sector")
-    public Result getSector(Integer sectorId) {
+    public Result getSector(String sectorId) {
 
         if (sectorId == null) {
             Sector[] sectors = sectorMapper.getSectors();
@@ -54,7 +54,6 @@ public class SectorController {
             if (sector == null) {
                 return new Result(ResultCode.RESULT_DATA_NONE);
             }
-
             JSONObject result = new JSONObject();
             result.put("sector", sector);
 

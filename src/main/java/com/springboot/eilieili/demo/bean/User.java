@@ -12,9 +12,9 @@ import lombok.With;
 @Data
 
 public class User {
-    private Integer userId;
+    private String userId;
     private String userName;
-    private transient String userPassword;
     private Integer userLevel;
     private Integer userLevelProgress;
+    private String userPicPath;
 }

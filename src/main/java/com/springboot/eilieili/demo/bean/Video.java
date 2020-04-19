@@ -9,12 +9,13 @@ import lombok.Data;
  */
 @Data
 public class Video {
-    private Integer videoId;
-    private Integer userId;
-    private Integer sectorId;
+    private String videoId;
+    private String userId;
+    private String sectorId;
     private String videoName;
     private String videoPath;
     private String videoPicPath;
     private String videoBrief;
-
+    private Integer videoViewTimes;
+    private String maxQuality;
 }

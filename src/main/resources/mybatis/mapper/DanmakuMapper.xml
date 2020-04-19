@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.eilieili.demo.mapper.DanmakuMapper">
+    <select id="getDanmaku" resultType="com.springboot.eilieili.demo.bean.Danmaku">
+        SELECT u.userName     as author,
+               d.danmakuTime  as time,
+               d.danmakuText  as text,
+               d.danmakuColor as color,
+               d.danmakuType  as type
+        FROM `Danmaku` d,
+             `User` u,
+             `Video` v
+        WHERE v.videoId = #{videoId}
+          AND v.videoId = d.videoId
+          AND d.userId = u.userID    </select>
+
+    <insert id="postDanmaku">
+        INSERT INTO Danmaku (
+            danmakuText,
+            danmakuType,
+            danmakuColor,
+            danmakuTime,
+            videoId,
+            userId
+        )
+        VALUES
+        (#{text}, #{type}, #{color}, #{time}, #{id}, #{author})
+
+    </insert>
+
+
+
+</mapper>

@@ -5,16 +5,57 @@
 <mapper namespace="com.springboot.eilieili.demo.mapper.UserMapper">
 
     <select id="getUserByAccount" resultType="com.springboot.eilieili.demo.bean.User">
-        SELECT userId, userName, userAccount, userLevel, userLevelProgress
-        FROM User
+        SELECT userId, userName, userAccount, userLevel, userLevelProgress, userPicPath
+        FROM `User`
         WHERE userAccount = #{userAccount}
+    </select>
+
+
+    <select id="getUserById" resultType="com.springboot.eilieili.demo.bean.User">
+        SELECT userId, userName, userAccount, userLevel, userLevelProgress, userPicPath
+        FROM `User`
+        WHERE userId = #{userId}
     </select>
 
     <select id="getUserPasswordByAccount" resultType="String">
         SELECT userPassword
-        FROM User
+        FROM `User`
         WHERE userAccount = #{userAccount}
     </select>
+
+    <select id="checkUserName" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `User`
+        WHERE userName = #{checkName}
+            AND userId != #{userId}
+    </select>
+
+    <select id="checkUserPassword" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `User`
+        WHERE userPassword = #{checkPassword}
+          AND userId = #{userId}
+    </select>
+
+
+    <update id="updateUserPic">
+        UPDATE `User`
+        SET userPicPath = #{newPicPath}
+        WHERE userPicPath = #{oldPicPath}
+    </update>
+
+    <update id="updateUserName">
+        UPDATE `User`
+        SET userName = #{newName}
+        WHERE userId = #{userId}
+    </update>
+
+
+    <update id="updateUserPassword">
+        UPDATE `User`
+        SET userPassword = #{newPassword}
+        WHERE userId = #{userId}
+    </update>
 
     <!--    <select id="getUserPassword" resultType="String">-->
     <!--        SELECT userPassword FROM User WHERE userId=#{userId}-->

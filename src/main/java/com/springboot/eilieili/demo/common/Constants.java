@@ -39,4 +39,19 @@ public interface Constants {
 
     String IS_PART_TIME = "是";
     String NOT_PART_TIME = "否";
+
+    static final String VIDEO_RESOURCE_PATH = "H:/EiliEiliProject/resource/video/";
+    static final String PIC_RESOURCE_PATH = "H:/EiliEiliProject/resource/pic/";
+    static final String UPLOAD_TMP_VIDEO_PATH = "H:/EiliEiliProject/resource/video/tmp/";
+
+    static final String FFMPEG_PATH = "H:\\IDEA_project\\EiliEiliDemo\\exe\\ffmpeg.exe";
+    static final String BENTO4_FRM_PATH = "H:\\IDEA_project\\EiliEiliDemo\\exe\\bento4\\bin\\mp4fragment.exe";
+    static final String BENTO4_DASH_PATH = "H:\\IDEA_project\\EiliEiliDemo\\exe\\bento4\\bin\\mp4dash.bat";
+
+
+    static final String WEB_USER_PIC_PATH = "http://localhost:8088/pic/user/";
+    static final String WEB_VIDEO_PIC_PATH = "http://localhost:8088/pic/video/";
+    static final String WEB_VIDEO_PATH = "http://localhost:8088/video/";
+
+
 }

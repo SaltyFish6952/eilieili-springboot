@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class Sector {
 
-    private Integer sectorId;
+    private String sectorId;
     private String sectorName;
 
 }

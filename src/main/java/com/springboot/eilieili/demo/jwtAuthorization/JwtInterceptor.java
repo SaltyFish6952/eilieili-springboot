@@ -26,6 +26,8 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        log.info(request.getRequestURL().toString());
         // 忽略带JwtIgnore注解的请求, 不做后续token认证校验
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
@@ -45,7 +47,7 @@ public class JwtInterceptor extends HandlerInterceptorAdapter{
         log.info("## authHeader= {}", authHeader);
 
         if (StringUtils.isBlank(authHeader) || !authHeader.startsWith(JwtTokenUtil.TOKEN_PREFIX)) {
-            log.info(request.getRequestURL().toString());
+
             log.info("### 用户未登录，请先登录 ###");
             throw new CustomException(ResultCode.USER_NOT_LOGGED_IN);
         }
