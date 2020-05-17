@@ -57,14 +57,11 @@ public class LoginController {
             return new Result(ResultCode.USER_LOGIN_ERROR);
         }
 
-
-        // 这里模拟测试, 默认登录成功，返回用户ID和角色信息
         String userId = UUID.randomUUID().toString();
-//        String role = "admin";
+
         log.info(audience.getName());
         // 创建token
         String token = JwtTokenUtil.createJWT(userId, userData.getString("userAccount"), audience);
-//        String token = JwtTokenUtil.createJWT(userId, userName, role, audience);
         log.info("### 登录成功, token={} ###", token);
 
         // 将token放在响应头

@@ -18,4 +18,7 @@ public class Video {
     private String videoBrief;
     private Integer videoViewTimes;
     private String maxQuality;
+    private String videoTime;
+    private String uuid;
+
 }

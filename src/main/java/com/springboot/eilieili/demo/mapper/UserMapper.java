@@ -1,6 +1,7 @@
 package com.springboot.eilieili.demo.mapper;
 
 import com.springboot.eilieili.demo.bean.User;
+import com.springboot.eilieili.demo.bean.UserExtend;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -17,7 +18,7 @@ public interface UserMapper {
 
     public String getUserPasswordByAccount(String userAccount);
 
-    public void updateUserPic(String newPicPath, String oldPicPath);
+    public void updateUserPic(String newPicPath, String userId);
 
     public Integer checkUserName(String checkName,String userId);
 
@@ -27,9 +28,16 @@ public interface UserMapper {
 
     public void updateUserPassword(String userId, String newPassword);
 
-    public void updateVideoViewTimes(String videoId);
+    public Integer checkNewUserName(String checkName);
 
-//    public String getUserPassword(Integer userId);
+    public Integer checkNewUserAccount(String userAccount);
+
+
+    public UserExtend[] getAllUsers();
 //
-//    public void insertUser(User user);
+    public void insertUser(String userName, String userAccount, String userPassword);
+
+    public void updateUser(String userId, String userName, String userAccount, String userPassword);
+
+    public void deleteUser(String userId);
 }

@@ -27,8 +27,21 @@
         SELECT COUNT(*)
         FROM `User`
         WHERE userName = #{checkName}
-            AND userId != #{userId}
+          AND userId != #{userId}
     </select>
+
+    <select id="checkNewUserName" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `User`
+        WHERE userName = #{checkName}
+    </select>
+
+    <select id="checkNewUserAccount" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `User`
+        Where userAccount = #{userAccount}
+    </select>
+
 
     <select id="checkUserPassword" resultType="Integer">
         SELECT COUNT(*)
@@ -41,7 +54,7 @@
     <update id="updateUserPic">
         UPDATE `User`
         SET userPicPath = #{newPicPath}
-        WHERE userPicPath = #{oldPicPath}
+        WHERE userId = #{userId}
     </update>
 
     <update id="updateUserName">
@@ -57,8 +70,28 @@
         WHERE userId = #{userId}
     </update>
 
-    <!--    <select id="getUserPassword" resultType="String">-->
-    <!--        SELECT userPassword FROM User WHERE userId=#{userId}-->
-    <!--    </select>-->
+    <insert id="insertUser">
+        INSERT INTO `User` (userName, userAccount, userPassword, userLevel, userLevelProgress)
+        VALUES (#{userName}, #{userAccount}, #{userPassword}, 1, 0)
+    </insert>
+
+    <select id="getAllUsers" resultType="com.springboot.eilieili.demo.bean.UserExtend">
+        SELECT *
+        FROM `User`
+    </select>
+
+    <update id="updateUser">
+        UPDATE `User`
+        SET userName     = #{userName},
+            userAccount  = #{userAccount},
+            userPassword = #{userPassword}
+        WHERE userId = #{userId}
+    </update>
+
+    <delete id="deleteUser">
+        DELETE
+        FROM `User`
+        WHERE userId = #{userId}
+    </delete>
 
 </mapper>

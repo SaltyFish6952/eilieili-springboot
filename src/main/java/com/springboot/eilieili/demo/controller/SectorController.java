@@ -10,8 +10,7 @@ import com.springboot.eilieili.demo.jwtAuthorization.JwtIgnore;
 import com.springboot.eilieili.demo.mapper.SectorMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by Intellij IDEA.
@@ -61,6 +60,69 @@ public class SectorController {
         }
 
 
+    }
+
+    @PostMapping("/api/sector")
+    public Result postSector(@RequestBody JSONObject data) {
+
+        try {
+
+            String sectorName = data.getString("sectorName");
+            if (sectorName == null) {
+                return new Result(ResultCode.PARAM_NOT_COMPLETE);
+            }
+
+            sectorMapper.postSector(sectorName);
+            return Result.SUCCESS();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return Result.FAIL(e.getMessage());
+        }
+    }
+
+    @PutMapping("/api/sector")
+    public Result updateSector(@RequestBody JSONObject data) {
+
+        try {
+
+            String sectorId = data.getString("sectorId");
+            String sectorName = data.getString("sectorName");
+
+            if (sectorId == null || sectorName == null) {
+                return new Result(ResultCode.PARAM_NOT_COMPLETE);
+            }
+
+            sectorMapper.updateSector(sectorId, sectorName);
+            return Result.SUCCESS();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return Result.FAIL(e.getMessage());
+        }
+
+    }
+
+    @DeleteMapping("/api/sector")
+    public Result deleteSector(@RequestBody JSONObject data) {
+
+        try {
+
+            String sectorId = data.getString("sectorId");
+            if (sectorId == null) {
+                return new Result(ResultCode.PARAM_NOT_COMPLETE);
+            }
+
+            sectorMapper.deleteSector(sectorId);
+            return Result.SUCCESS();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return Result.FAIL(e.getMessage());
+        }
     }
 
 

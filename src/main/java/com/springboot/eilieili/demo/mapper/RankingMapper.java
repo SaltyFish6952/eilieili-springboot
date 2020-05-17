@@ -8,6 +8,11 @@ import org.apache.ibatis.annotations.Mapper;
 public interface RankingMapper {
 
     public Ranking[] getRankingById(String sectorId);
+
     public Ranking[] getRanking();
+
     public Ranking[] getRankingByIdIndex(String sectorId);
+
+
+
 }

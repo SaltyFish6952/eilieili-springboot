@@ -4,8 +4,10 @@ package com.springboot.eilieili.demo.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.eilieili.demo.bean.User;
 import com.springboot.eilieili.demo.bean.Video;
+import com.springboot.eilieili.demo.bean.VideoTransCode;
 import com.springboot.eilieili.demo.common.response.Result;
 import com.springboot.eilieili.demo.common.response.ResultCode;
+import com.springboot.eilieili.demo.jwtAuthorization.JwtIgnore;
 import com.springboot.eilieili.demo.mapper.UserMapper;
 import com.springboot.eilieili.demo.mapper.VideoMapper;
 import com.springboot.eilieili.demo.videoTransfer.Transcode;
@@ -93,7 +95,7 @@ public class UploadController {
 
     }
 
-    @PostMapping("api/upload/video/info")
+    @PostMapping("/api/upload/video/info")
     public Result postVideoInfo(@RequestBody JSONObject data) {
 
         String uuid = data.getString("uuid");
@@ -152,18 +154,22 @@ public class UploadController {
 
             //remove old pic
             User user = userMapper.getUserById(userId);
-            String oldPicPath = user.getUserPicPath();
-            String oldPicName = oldPicPath.substring(oldPicPath.lastIndexOf('/') + 1);
-            File oldPic = new File(filePath + oldPicName);
-            if (oldPic.exists()) {
-                if (!oldPic.delete())
-                    log.error("error: delete file:" + oldPicName + " failed.");
+
+            if (user.getUserPicPath() != null) {
+                String oldPicPath = user.getUserPicPath();
+                String oldPicName = oldPicPath.substring(oldPicPath.lastIndexOf('/') + 1);
+                File oldPic = new File(filePath + oldPicName);
+                if (oldPic.exists()) {
+                    if (!oldPic.delete())
+                        log.error("error: delete file:" + oldPicName + " failed.");
+                }
             }
+
 
             //transfer and save to sql
 
             file.transferTo(dest);
-            userMapper.updateUserPic(WEB_USER_PIC_PATH + fileName, oldPicPath);
+            userMapper.updateUserPic(WEB_USER_PIC_PATH + fileName, user.getUserId());
 
 
         } catch (Exception e) {
@@ -171,6 +177,28 @@ public class UploadController {
         }
 
         return Result.SUCCESS();
+
+    }
+
+    @JwtIgnore
+    @GetMapping("/api/transcode")
+    public Result queryTranscodeStatus(String userId) {
+
+        try {
+
+            VideoTransCode[] videoTransCode = videoMapper.getVideoStatus(userId);
+
+            JSONObject res = new JSONObject();
+            res.put("videos", videoTransCode);
+
+            return Result.SUCCESS(res);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return Result.FAIL(e.getMessage());
+        }
 
     }
 

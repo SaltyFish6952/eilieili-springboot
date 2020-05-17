@@ -16,28 +16,33 @@ public class Transcode {
 
     }
 
-    private void removeTask(String uuid) {
-        taskMap.remove(uuid);
-    }
-
-    public int isTaskFinished(String uuid) {
-
-        try {
-
-            if (taskMap.get(uuid).isFinished) {
-
-                removeTask(uuid);
-                return 1;
-            } else
-                return 0;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error(e.getMessage());
-            return -1;
-        }
-
-
-    }
+//    private void removeTask(String uuid) {
+//        taskMap.remove(uuid);
+//    }
+//
+//    public int isTaskFinished(String uuid) {
+//
+//        try {
+//
+//            TranscodeTask task = taskMap.get(uuid);
+//
+//            if(task == null){
+//                return -2;              //HashMap中不存在task
+//            }
+//
+//            if (task.isFinished) {
+//                removeTask(uuid);
+//                return 1;               //HashMap中存在task, 且已完成
+//            } else
+//                return 0;               //HashMap中存在task, 正在转码
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            log.error(e.getMessage());
+//            return -1;                  //出现错误
+//        }
+//
+//
+//    }
 
 }

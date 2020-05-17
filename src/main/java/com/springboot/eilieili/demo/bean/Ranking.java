@@ -10,8 +10,11 @@ public class Ranking {
     private String videoName;
     private String userId;
     private String userName;
+    private String sectorId;
+    private String sectorName;
+    private Integer videoViewTimes;
     private Integer likes;
     private Integer favorites;
-    private Integer videoViewTimes;
-
+    private Integer danmakus;
+    private float score;
 }

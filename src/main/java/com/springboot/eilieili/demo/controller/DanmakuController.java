@@ -46,7 +46,7 @@ public class DanmakuController {
 
     }
 
-    @JwtIgnore
+
     @PostMapping("/api/danmaku/v3")
     public Result postDanmaku(@RequestBody JSONObject danmakuData) {
 

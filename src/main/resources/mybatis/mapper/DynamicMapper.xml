@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.eilieili.demo.mapper.DynamicMapper">
+    <select id="getDynamic" resultType="com.springboot.eilieili.demo.bean.Dynamic">
+        SELECT d.dynamicId, d.dynamicText, d.dynamicTime, u.userName, u.userPicPath, u.userId, u.userLevel
+        FROM `User` u,
+             `Dynamic` d
+        WHERE d.userId = u.userId
+          AND u.userId = #{userId}
+        ORDER BY d.dynamicTime DESC
+        LIMIT ${(page - 1) * 5} , 5
+
+    </select>
+
+    <select id="getAllDynamic" resultType="com.springboot.eilieili.demo.bean.Dynamic">
+        SELECT distinct d.dynamicId, d.dynamicText, d.dynamicTime, u.userName, u.userPicPath, u.userId, u.userLevel
+        FROM `User` u,
+             `Dynamic` d,
+             `Subscribe` s
+        WHERE (s.subscriberUserId = #{userId} AND s.publisherUserId = d.userId AND u.userId = d.userId)
+           OR (d.userId = u.userId AND u.userId = #{userId})
+        ORDER BY d.dynamicTime DESC
+        LIMIT ${(page - 1) * 5} , 5
+    </select>
+
+    <insert id="insertDynamic">
+        INSERT INTO `Dynamic` (dynamicText, userId)
+        VALUES (#{dynamicText}, #{userId})
+    </insert>
+
+    <delete id="removeDynamic">
+        DELETE
+        FROM `Dynamic`
+        WHERE dynamicId = #{dynamicId}
+    </delete>
+
+
+    <select id="getReplyById" resultType="com.springboot.eilieili.demo.bean.DynamicReply">
+        SELECT r.replyId,
+               r.replyText,
+               r.replyTo   as replyToId,
+               r.replyFrom as replyFromId,
+               r.replyTime,
+               u1.userName as replyToName,
+               u2.userName as replyFromName
+        FROM `DynamicReply` r,
+             `User` u1,
+             `User` u2
+        WHERE u1.userId = r.replyTo
+          AND u2.userId = r.replyFrom
+          AND r.dynamicId = #{dynamicId}
+    </select>
+
+    <insert id="postReply">
+        INSERT INTO `DynamicReply` (dynamicId, replyText, replyTo, replyFrom)
+        VALUES (#{dynamicId}, #{replyText}, #{replyTo}, #{replyFrom})
+    </insert>
+
+    <delete id="removeReply">
+        DELETE
+        FROM `DynamicReply`
+        WHERE replyId = #{replyId}
+    </delete>
+
+</mapper>

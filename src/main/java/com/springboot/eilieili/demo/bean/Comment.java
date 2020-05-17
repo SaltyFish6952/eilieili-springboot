@@ -5,8 +5,11 @@ import lombok.Data;
 @Data
 public class Comment {
     private String commentId;
-    private String userId;
     private String commentText;
+    private String commentTime;
     private String userName;
-    private String commentDate;
+    private String userId;
+    private String userLevel;
+    private String userPicPath;
+    private String videoName;
 }

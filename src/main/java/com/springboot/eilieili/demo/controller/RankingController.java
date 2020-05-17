@@ -31,7 +31,7 @@ public class RankingController {
 
         } else {
 
-            if (isIndex)
+            if (isIndex != null)
                 rankings = rankingMapper.getRankingByIdIndex(sectorId);
             else
                 rankings = rankingMapper.getRankingById(sectorId);

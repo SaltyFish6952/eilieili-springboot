@@ -12,7 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.springboot.eilieili.demo.common.Constants.VIDEO_RESOURCE_PATH;
+import static com.springboot.eilieili.demo.common.Constants.WEB_VIDEO_PATH;
 
 /**
  * Created by Intellij IDEA.
@@ -32,14 +38,23 @@ public class VideoController {
 
         try {
 
-            VideoExtend video = videoMapper.getVideoInfoById(videoId);
-
-            if (video == null) {
-                return new Result(ResultCode.RESULT_DATA_NONE);
-            }
-
             JSONObject result = new JSONObject();
-            result.put("video", video);
+
+            if (videoId == null) {
+                Video[] videos = videoMapper.getAllVideos();
+
+                if (videos == null) {
+                    return new Result(ResultCode.RESULT_DATA_NONE);
+                }
+                result.put("videos", videos);
+
+            } else {
+                VideoExtend video = videoMapper.getVideoInfoById(videoId);
+                if (video == null) {
+                    return new Result(ResultCode.RESULT_DATA_NONE);
+                }
+                result.put("video", video);
+            }
 
             return Result.SUCCESS(result);
 
@@ -53,8 +68,10 @@ public class VideoController {
 
 
     @JwtIgnore
-    @GetMapping("/api/videos/recommend")
-    public Result getRecommendRandomVideos(String videoName) {
+    @PostMapping("/api/videos/recommend")
+    public Result getRecommendRandomVideos(@RequestBody JSONObject data) {
+
+        String videoName = data.getString("videoName");
 
         if (videoName == null)
             return new Result(ResultCode.PARAM_IS_BLANK);
@@ -97,7 +114,7 @@ public class VideoController {
 
         } else {
 
-            Video[] videos = videoMapper.getVideosRandomBySectorId(sectorId);
+            VideoExtend[] videos = videoMapper.getVideosRandomBySectorId(sectorId);
 
             if (videos == null) {
                 return new Result(ResultCode.RESULT_DATA_NONE);
@@ -196,6 +213,8 @@ public class VideoController {
                 JSONObject item = new JSONObject();
                 item.put("value", videos[i].getVideoName());
                 item.put("id", videos[i].getVideoId());
+                item.put("videoPicPath", videos[i].getVideoPicPath());
+
 
                 resArray.add(item);
             }
@@ -271,6 +290,203 @@ public class VideoController {
 
             return Result.SUCCESS();
 
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return Result.FAIL(e.getMessage());
+        }
+
+    }
+
+
+    //favorite
+
+    @GetMapping("/api/video/favorite")
+    public Result getUserVideoFavorite(String userId, String videoId) {
+
+        try {
+
+            if (userId == null || videoId == null) {
+                return new Result(ResultCode.PARAM_NOT_COMPLETE);
+            } else {
+
+                Boolean isFavorite = (videoMapper.getFavoriteById(videoId, userId) != 0);
+
+                JSONObject res = new JSONObject();
+                res.put("isFavorite", isFavorite);
+
+                return Result.SUCCESS(res);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return Result.FAIL(e.getMessage());
+        }
+
+    }
+
+
+    @PostMapping("/api/video/favorite")
+    public Result postUserVideoFavorite(@RequestBody JSONObject data) {
+
+        try {
+
+            String videoId = data.getString("videoId");
+            String userId = data.getString("userId");
+            Boolean isClickFavorite = data.getBoolean("isFavorite");
+
+            if (isClickFavorite) {
+                videoMapper.addUserFavorite(videoId, userId);
+            } else {
+                videoMapper.removeUserFavorite(videoId, userId);
+            }
+
+            return Result.SUCCESS();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return Result.FAIL(e.getMessage());
+        }
+
+    }
+
+    @GetMapping("/api/video/download")
+    public Result getVideoDownloadUrl(String videoId) {
+
+        try {
+
+            String uuid = videoMapper.getVideoUUID(videoId);
+            String dashPath = VIDEO_RESOURCE_PATH + uuid + "/";
+            String pattern = "^" + uuid + ".(flv|mov|mp4|avi)";
+            Pattern r = Pattern.compile(pattern);
+            JSONObject res = new JSONObject();
+
+            File file = new File(dashPath);
+
+            if (file.exists()) {
+                File[] files = file.listFiles();
+
+                if (files == null || files.length == 0) {
+                    log.error("FAIL TO GET files");
+                    return new Result(ResultCode.RESULT_DATA_NONE);
+                }
+
+                for (File insideFile : files) {
+
+                    Matcher m = r.matcher(insideFile.getName());
+
+                    if (m.find()) {
+                        res.put("url", WEB_VIDEO_PATH + uuid + "/" + insideFile.getName());
+                        return Result.SUCCESS(res);
+                    }
+
+                }
+            }
+            return new Result(ResultCode.RESULT_DATA_NONE);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return Result.FAIL(e.getMessage());
+        }
+
+    }
+
+    @DeleteMapping("/api/video")
+    public Result deleteVideo(@RequestBody JSONObject data) {
+        try {
+
+            videoMapper.removeVideo(data.getString("uuid"));
+
+            deleteLocalDir(VIDEO_RESOURCE_PATH + data.getString("uuid") + "/");
+
+            return Result.SUCCESS();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return Result.FAIL(e.getMessage());
+        }
+    }
+
+
+    private static void deleteLocalDir(String dir) {
+        File file = new File(dir);
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                if (files != null) {
+                    for (File f : files) {
+                        deleteLocalDir(f.getPath());
+                    }
+                }
+            }
+            file.delete();
+        }
+        log.info("删除 " + dir + " 完成");
+    }
+
+    @JwtIgnore
+    @GetMapping("/api/video/favorites")
+    public Result getUserFavoriteVideos(String userId, Integer page) {
+
+        try {
+
+            if (userId == null || page == null) {
+                return new Result(ResultCode.PARAM_NOT_COMPLETE);
+            }
+
+            Video[] videos = videoMapper.getUserFavoriteVideos(userId, page);
+
+            JSONObject res = new JSONObject();
+            res.put("videos", videos);
+
+            return Result.SUCCESS(res);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return Result.FAIL(e.getMessage());
+        }
+
+    }
+
+    @PutMapping("/api/video")
+    public Result updateVideo(@RequestBody JSONObject data) {
+
+        try {
+
+            String videoName = data.getString("videoName");
+            String videoBrief = data.getString("videoBrief");
+            String sectorId = data.getString("sectorId");
+            String videoId = data.getString("videoId");
+
+            videoMapper.updateVideo(videoName, videoBrief, sectorId, videoId);
+
+            return Result.SUCCESS();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return Result.FAIL(e.getMessage());
+        }
+
+    }
+
+    @PutMapping("/api/video/check")
+    public Result updateVideoCheck(@RequestBody JSONObject data) {
+
+        try {
+
+            Integer status = data.getInteger("status");
+            String uuid = data.getString("uuid");
+            videoMapper.updateVideoStatus(uuid, status);
+
+            return Result.SUCCESS();
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -10,6 +10,9 @@
                v.videoName,
                u.userId,
                u.userName,
+               s.sectorId,
+               s.sectorName,
+               v.videoViewTimes,
                (
                    SELECT COUNT(*)
                    FROM `Like` l
@@ -20,11 +23,21 @@
                    FROM `Favorite` f
                    WHERE f.videoId = v.videoId
                ) AS favorites,
-               v.videoViewTimes
+               (
+                   SELECT COUNT(*)
+                   FROM `Danmaku` d
+                   WHERE d.videoId = v.videoId
+               ) AS danmakus,
+               (SELECT likes * 0.3 + favorites * 0.4 + danmakus * 0.2 + v.videoViewTimes * 0.2)
+                 AS score
+
         FROM `Video` v,
-             `User` u
+             `User` u,
+             `Sector` s
         WHERE v.userId = u.userId
           AND v.sectorId = #{sectorId}
+          AND s.sectorId = v.sectorId
+        ORDER BY score, v.videoId DESC
 
     </select>
 
@@ -34,6 +47,9 @@
                v.videoName,
                u.userId,
                u.userName,
+               s.sectorId,
+               s.sectorName,
+               v.videoViewTimes,
                (
                    SELECT COUNT(*)
                    FROM `Like` l
@@ -44,10 +60,20 @@
                    FROM `Favorite` f
                    WHERE f.videoId = v.videoId
                ) AS favorites,
-               v.videoViewTimes
+               (
+                   SELECT COUNT(*)
+                   FROM `Danmaku` d
+                   WHERE d.videoId = v.videoId
+               ) AS danmakus,
+               (SELECT likes * 0.3 + favorites * 0.3 + danmakus * 0.2 + v.videoViewTimes * 0.2)
+                 AS score
+
         FROM `Video` v,
-             `User` u
+             `User` u,
+             `Sector` s
         WHERE v.userId = u.userId
+          AND s.sectorId = v.sectorId
+        ORDER BY score, v.videoId DESC
     </select>
 
     <select id="getRankingByIdIndex" resultType="com.springboot.eilieili.demo.bean.Ranking">
@@ -56,6 +82,9 @@
                v.videoName,
                u.userId,
                u.userName,
+               s.sectorId,
+               s.sectorName,
+               v.videoViewTimes,
                (
                    SELECT COUNT(*)
                    FROM `Like` l
@@ -66,11 +95,21 @@
                    FROM `Favorite` f
                    WHERE f.videoId = v.videoId
                ) AS favorites,
-               v.videoViewTimes
+               (
+                   SELECT COUNT(*)
+                   FROM `Danmaku` d
+                   WHERE d.videoId = v.videoId
+               ) AS danmakus,
+               (SELECT likes * 0.3 + favorites * 0.4 + danmakus * 0.2 + v.videoViewTimes * 0.2)
+                 AS score
+
         FROM `Video` v,
-             `User` u
+             `User` u,
+             `Sector` s
         WHERE v.userId = u.userId
           AND v.sectorId = #{sectorId}
+          AND s.sectorId = v.sectorId
+        ORDER BY score, v.videoId DESC
         LIMIT 0,8
     </select>
 

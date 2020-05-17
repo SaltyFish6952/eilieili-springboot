@@ -7,14 +7,25 @@
     <select id="getVideosRandom" resultType="com.springboot.eilieili.demo.bean.Video">
         SELECT *
         FROM Video
+        WHERE status = 0
         ORDER BY RAND()
         limit 8
     </select>
 
-    <select id="getVideosRandomBySectorId" resultType="com.springboot.eilieili.demo.bean.Video">
-        SELECT *
-        FROM Video
-        WHERE sectorId = #{sectorId}
+    <select id="getVideosRandomBySectorId" resultType="com.springboot.eilieili.demo.bean.VideoExtend">
+        SELECT v.videoId,
+               u.userId,
+               v.videoName,
+               s.sectorName,
+               v.videoPicPath,
+               u.userName
+        FROM `Video` v,
+             `User` u,
+             `Sector` s
+        WHERE v.userId = u.userId
+          AND s.sectorId = v.sectorId
+          AND s.sectorId = #{sectorId}
+          AND status = 0
         ORDER BY RAND()
         limit 8
     </select>
@@ -44,6 +55,7 @@
         WHERE v.userId = u.userId
           AND s.sectorId = v.sectorId
           AND v.videoName LIKE '%${keyword}%'
+          AND status = 0
         ORDER BY RAND()
         limit 8
     </select>
@@ -53,13 +65,24 @@
         SELECT *
         FROM Video
         WHERE sectorId = #{sectorId}
+          AND status = 0
     </select>
 
 
-    <select id="getVideosBySectorIdAndPage" resultType="com.springboot.eilieili.demo.bean.Video">
-        SELECT *
-        FROM Video
-        WHERE sectorId = #{sectorId}
+    <select id="getVideosBySectorIdAndPage" resultType="com.springboot.eilieili.demo.bean.VideoExtend">
+        SELECT v.videoId,
+               u.userId,
+               v.videoName,
+               s.sectorName,
+               v.videoPicPath,
+               u.userName
+        FROM `Video` v,
+             `User` u,
+             `Sector` s
+        WHERE v.userId = u.userId
+          AND s.sectorId = v.sectorId
+          AND s.sectorId = #{sectorId}
+          AND status = 0
         LIMIT ${(page - 1) * 12} , 12
     </select>
 
@@ -67,19 +90,49 @@
         SELECT COUNT(*)
         FROM Video
         WHERE sectorId = #{sectorId}
+          AND status = 0
     </select>
 
     <select id="getVideosByUserId" resultType="com.springboot.eilieili.demo.bean.Video">
         SELECT *
         FROM Video
         WHERE userId = #{userId}
+          AND status = 0
     </select>
 
-    <select id="getVideosByUserIdAndPage" resultType="com.springboot.eilieili.demo.bean.Video">
-        SELECT *
-        FROM Video
-        WHERE userId = #{userId}
-        LIMIT ${(page - 1) * 12} , 12
+    <select id="getVideosByUserIdAndPage" resultType="com.springboot.eilieili.demo.bean.VideoExtend">
+        SELECT v.videoId,
+               v.videoName,
+               v.videoPath,
+               v.videoPicPath,
+               v.videoBrief,
+               v.videoViewTimes,
+               s.sectorName,
+               s.sectorId,
+               v.maxQuality,
+               v.uuid,
+               (
+                   SELECT COUNT(*)
+                   FROM `Like` l
+                   WHERE l.videoId = v.videoId
+               ) AS likes,
+               (
+                   SELECT COUNT(*)
+                   FROM `Favorite` f
+                   WHERE f.videoId = v.videoId
+               ) AS favorites,
+               (
+                   SELECT COUNT(*)
+                   FROM `Comment` c
+                   WHERE c.videoId = v.videoId
+               ) AS comments
+
+        FROM `Video` v,
+             `Sector` s
+        WHERE s.sectorId = v.sectorId
+          AND v.userId = #{userId}
+          AND status = 0
+        LIMIT ${(page - 1) * 4} , 4
     </select>
 
 
@@ -87,6 +140,7 @@
         SELECT COUNT(*)
         FROM Video
         WHERE userId = #{userId}
+          AND status = 0
     </select>
 
 
@@ -99,6 +153,7 @@
                v.videoPicPath,
                v.videoBrief,
                v.videoViewTimes,
+               v.videoTime,
                u.userName,
                u.userPicPath,
                u.userLevel,
@@ -113,7 +168,12 @@
                    SELECT COUNT(*)
                    FROM `Favorite` f
                    WHERE f.videoId = v.videoId
-               ) AS favorites
+               ) AS favorites,
+               (
+                   SELECT COUNT(*)
+                   FROM `Comment` c
+                   WHERE c.videoId = v.videoId
+               ) AS comments
 
         FROM `Video` v,
              `User` u,
@@ -124,9 +184,17 @@
     </select>
 
 
-    <!--    <select id="getUserPassword" resultType="String">-->
-    <!--        SELECT userPassword FROM User WHERE userId=#{userId}-->
-    <!--    </select>-->
+    <select id="getAllVideos" resultType="com.springboot.eilieili.demo.bean.VideoTransCode">
+        SELECT videoName,
+               videoBrief,
+               videoId,
+               sectorId,
+               videoPath,
+               maxQuality,
+               status,
+               uuid
+        FROM `Video`
+    </select>
 
 
     <insert id="postVideo">
@@ -151,11 +219,12 @@
 
 
     <select id="getSearchVideo" resultType="com.springboot.eilieili.demo.bean.Video">
-        SELECT videoName, videoId
+        SELECT videoName, videoId, videoPicPath
         FROM `Video`
         WHERE videoName LIKE '%${query}%'
         LIMIT 8
     </select>
+
 
     <update id="updateVideoViewTimes">
         UPDATE Video
@@ -182,5 +251,70 @@
         WHERE videoId = #{videoId}
           AND userId = #{userId}
     </delete>
+
+    <!--    Favorite-->
+
+    <select id="getFavoriteById" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `Favorite`
+        WHERE videoId = #{videoId}
+          AND userId = #{userId}
+
+    </select>
+
+    <insert id="addUserFavorite">
+        INSERT INTO `Favorite` (videoId, userId)
+        VALUES (#{videoId}, #{userId})
+    </insert>
+
+    <delete id="removeUserFavorite">
+        DELETE
+        FROM `Favorite`
+        WHERE videoId = #{videoId}
+          AND userId = #{userId}
+    </delete>
+
+    <select id="getVideoUUID" resultType="String">
+        SELECT uuid
+        FROM `Video`
+        WHERE videoId = #{videoId}
+    </select>
+
+    <select id="getVideoStatus" resultType="com.springboot.eilieili.demo.bean.VideoTransCode">
+        SELECT *
+        FROM `Video`
+        WHERE userId = #{userId}
+    </select>
+
+    <update id="updateVideoStatus">
+        UPDATE `Video`
+        SET status = #{status}
+        WHERE uuid = #{uuid}
+    </update>
+
+    <delete id="removeVideo">
+        DELETE
+        FROM `Video`
+        WHERE uuid = #{uuid}
+    </delete>
+
+    <select id="getUserFavoriteVideos" resultType="com.springboot.eilieili.demo.bean.VideoExtend">
+        SELECT v.videoName, v.videoId, v.videoPicPath, v.videoBrief, s.sectorName
+        FROM `Video` v,
+             `Favorite` f,
+             `Sector` s
+        WHERE f.userId = #{userId}
+          AND v.videoId = f.videoId
+          AND v.sectorId = s.sectorId
+        LIMIT ${(page - 1) * 4} , 4
+    </select>
+
+    <update id="updateVideo">
+        UPDATE `Video`
+        SET videoName  = #{videoName},
+            videoBrief = #{videoBrief},
+            sectorId   = #{sectorId}
+        WHERE videoId = #{videoId}
+    </update>
 
 </mapper>

@@ -13,5 +13,12 @@ import org.apache.ibatis.annotations.Mapper;
 public interface SectorMapper {
 
     public Sector[] getSectors();
+
     public Sector getSectorById(String sectorId);
+
+    public void postSector(String sectorName);
+
+    public void updateSector(String sectorId, String sectorName);
+
+    public void deleteSector(String sectorId);
 }

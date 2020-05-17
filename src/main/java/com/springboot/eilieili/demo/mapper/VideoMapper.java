@@ -2,6 +2,7 @@ package com.springboot.eilieili.demo.mapper;
 
 import com.springboot.eilieili.demo.bean.Video;
 import com.springboot.eilieili.demo.bean.VideoExtend;
+import com.springboot.eilieili.demo.bean.VideoTransCode;
 import org.apache.ibatis.annotations.Mapper;
 import sun.rmi.server.InactiveGroupException;
 
@@ -15,21 +16,23 @@ public interface VideoMapper {
 
     public VideoExtend getVideoInfoById(String videoId);
 
+    public Video[] getAllVideos();
+
     public VideoExtend[] getRecommendRandomVideos(String keyword);
 
     public Video[] getVideosRandom();
 
-    public Video[] getVideosRandomBySectorId(String sectorId);
+    public VideoExtend[] getVideosRandomBySectorId(String sectorId);
 
     public Video[] getVideosBySectorId(String sectorId);
 
     public Integer getVideosCountBySectorId(String sectorId);
 
-    public Video[] getVideosBySectorIdAndPage(String sectorId, Integer page);
+    public VideoExtend[] getVideosBySectorIdAndPage(String sectorId, Integer page);
 
     public Video[] getVideosByUserId(String userId);
 
-    public Video[] getVideosByUserIdAndPage(String userId, Integer page);
+    public VideoExtend[] getVideosByUserIdAndPage(String userId, Integer page);
 
     public Integer getVideosCountByUserId(String userId);
 
@@ -47,5 +50,23 @@ public interface VideoMapper {
     public void addUserLike(String videoId, String userId);
 
     public void removeUserLike(String videoId, String userId);
+
+    public Integer getFavoriteById(String videoId, String userId);
+
+    public void addUserFavorite(String videoId, String userId);
+
+    public void removeUserFavorite(String videoId, String userId);
+
+    public String getVideoUUID(String videoId);
+
+    public VideoTransCode[] getVideoStatus(String userId);
+
+    public void updateVideoStatus(String uuid, Integer status);
+
+    public void removeVideo(String uuid);
+
+    public Video[] getUserFavoriteVideos(String userId, Integer page);
+
+    public void updateVideo(String videoName, String videoBrief, String sectorId, String videoId);
 
 }

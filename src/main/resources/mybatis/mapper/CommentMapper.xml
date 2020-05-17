@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.eilieili.demo.mapper.CommentMapper">
+    <select id="getCommentById" resultType="com.springboot.eilieili.demo.bean.Comment">
+        SELECT c.commentId, c.commentText, c.commentTime, u.userName, u.userId, u.userLevel, u.userPicPath
+        FROM `Comment` c,
+             `User` u
+        WHERE c.userId = u.userId
+          AND c.videoId = #{videoId}
+        LIMIT ${(page - 1) * 12} , 12
+    </select>
+
+    <select id="getComment" resultType="com.springboot.eilieili.demo.bean.Comment">
+        SELECT c.commentId,
+               c.commentText,
+               c.commentTime,
+               u.userName,
+               u.userId,
+               u.userLevel,
+               u.userPicPath,
+               v.videoName
+        FROM `Comment` c,
+             `User` u,
+             `Video` v
+        WHERE c.userId = u.userId
+          AND v.videoId = c.videoId
+    </select>
+
+    <insert id="insertComment">
+        INSERT INTO `Comment` (videoId, userId, commentText)
+        VALUES (#{videoId}, #{userId}, #{commentText})
+    </insert>
+
+    <delete id="removeComment">
+        DELETE
+        FROM `Comment`
+        WHERE commentId = #{commentId}
+    </delete>
+
+    <select id="getCommentReplyById" resultType="com.springboot.eilieili.demo.bean.CommentReply">
+        SELECT cr.replyId,
+               cr.replyText,
+               cr.replyTo   as replyToId,
+               cr.replyFrom as replyFromId,
+               cr.replyTime,
+               u1.userName  as replyToName,
+               u2.userName  as replyFromName
+        FROM `CommentReply` cr,
+             `User` u1,
+             `User` u2
+        WHERE u1.userId = cr.replyTo
+          AND u2.userId = cr.replyFrom
+          AND cr.commentId = #{commentId}
+    </select>
+
+    <insert id="postReply">
+        INSERT INTO `CommentReply` (commentId, replyText, replyTo, replyFrom)
+        VALUES (#{commentId}, #{replyText}, #{replyTo}, #{replyFrom})
+    </insert>
+
+    <delete id="removeReply">
+        DELETE
+        FROM `CommentReply`
+        WHERE replyId = #{replyId}
+    </delete>
+
+</mapper>

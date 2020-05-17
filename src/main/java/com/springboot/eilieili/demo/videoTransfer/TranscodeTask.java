@@ -24,7 +24,7 @@ public class TranscodeTask {
     private static final String[] PIXELS = new String[]{"640x360", "1280x720", "1920x1080"};
 
     private String videoPath;
-    public Boolean isFinished = false;
+
 
     public TranscodeTask(String fileName, VideoMapper mapper) {
 
@@ -32,6 +32,7 @@ public class TranscodeTask {
         String originalFilePath = UPLOAD_TMP_VIDEO_PATH + fileName;
         videoPath = VIDEO_RESOURCE_PATH + fileName.split("\\.")[0] + "/";
         String mp4 = fileName.split("\\.")[0] + ".mp4";
+        String uuid = fileName.split("\\.")[0];
 
 
         File videoPathDir = new File(videoPath);
@@ -87,9 +88,7 @@ public class TranscodeTask {
 
         ArrayList<String> fNames = new ArrayList<>();
 
-
         log.error(Arrays.toString(BITRATES));
-
         log.error("i is " + i);
 
         if (i == -1) {
@@ -97,6 +96,8 @@ public class TranscodeTask {
             pixel = PIXELS[2];
 
         }
+
+        mapper.updateVideoStatus(uuid, 6);
 
         try {
 
@@ -108,6 +109,7 @@ public class TranscodeTask {
 
                     for (int j = finalI; j >= 0; j--) {
 
+                        mapper.updateVideoStatus(uuid, j + 3);
 
                         String name = "video_" + PIXELS[j] + "_" + mp4;
 
@@ -118,10 +120,16 @@ public class TranscodeTask {
 
                         fNames.add(videoPath + "f_" + name);
 
+
                     }
+
+                    mapper.updateVideoStatus(uuid, 2);
 
                     splitAudio("audio_" + mp4, originalFilePath);
                     bento4_fragment("audio_" + mp4, "f_audio_" + mp4);
+
+
+
                     fNames.add(videoPath + "f_audio_" + mp4);
 
                     bento4_dash(fNames);
@@ -134,17 +142,16 @@ public class TranscodeTask {
             thread.start();
             thread.join();
 
-            log.info("all done!");
-            isFinished = true;
-
-            String uuid = fileName.split("\\.")[0];
+            log.info(uuid + " done!");
 
 
+            mapper.updateVideoStatus(uuid, 1);
             mapper.postVideoQuality(uuid, pixel);
 
         } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());
+            mapper.updateVideoStatus(uuid, -1);
         }
 
 
@@ -153,7 +160,7 @@ public class TranscodeTask {
     private void splitAudio(String fileName, String originalFilePath) {
 
         List<String> command = new ArrayList<String>();
-        command.add("H:\\IDEA_project\\EiliEiliDemo\\exe\\ffmpeg.exe");
+        command.add(FFMPEG_PATH);
         command.add("-i");
         command.add(originalFilePath);
         command.add("-c:a");

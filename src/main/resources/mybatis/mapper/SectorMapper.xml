@@ -15,5 +15,22 @@
         WHERE sectorId = #{sectorId}
     </select>
 
+    <insert id="postSector">
+        INSERT INTO `Sector`(sectorName)
+        VALUES (#{sectorName})
+    </insert>
+
+    <update id="updateSector">
+        UPDATE `Sector`
+        SET sectorName = #{sectorName}
+        WHERE sectorId = #{sectorId}
+    </update>
+
+    <delete id="deleteSector">
+        DELETE
+        FROM `Sector`
+        WHERE sectorId = #{sector}
+    </delete>
+
 
 </mapper>
